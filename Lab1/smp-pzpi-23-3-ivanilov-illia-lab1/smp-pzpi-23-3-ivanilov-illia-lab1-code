@@ -1,0 +1,234 @@
+#!/bin/bash
+
+VERSION="1.0"
+
+show_help() {
+    echo "Використання: [--help | --version] | [[-q | --quiet] [академ_група] file.csv]"
+    echo "  --help       Вивести довідку"
+    echo "  --version    Вивести інформацію про версію"
+    echo "  -q, --quiet  Не виводити інформацію в стандартний потік виведення"
+}
+
+if [[ "$1" == "--help" ]]; then
+    show_help
+    exit 0
+elif [[ "$1" == "--version" ]]; then
+    echo "Версія $VERSION"
+    exit 0
+fi
+
+choose_csv_file() {
+    echo "Доступні файли розкладу:"
+    select choice in $(ls -t | grep -E '^TimeTable_.._.._20..\.csv') 'Вийти'; do
+        if [ "$choice" = 'Вийти' ]; then
+            exit 0
+        elif [ -n "$choice" ]; then
+            SELECTED_FILE="$choice"
+            echo "$SELECTED_FILE"
+            break
+        else
+            echo "Неправильне значення."
+        fi
+    done
+}
+
+choose_group() {
+    local input_file="$1"
+    groups=($(iconv -f cp1251 -t UTF-8 "$input_file" |
+              sed 's/\r/\n/g' |
+              awk -F' ' '$2 ~ /-/ {gsub(/"/, "", $1); print $1}' |
+              sort -u))
+
+    if [[ ${#groups[@]} -gt 0 ]]; then
+        echo "Доступні файли розкладу:"
+        select group in "${groups[@]}" "Вийти"; do
+            if [[ "$group" == "Вийти" ]]; then
+                exit 0
+            elif [[ -n "$group" ]]; then
+                SELECTED_GROUP="$group"
+                break
+            else
+                echo "Неправильне значення."
+            fi
+        done
+    else
+        group_line=$(iconv -f cp1251 -t UTF-8 "$input_file" | sed 's/\r/\n/g' | awk -F',' 'NR==2{print $1}')
+        group_candidates=$(echo "$group_line" | grep -oE 'DL [^"]+' | sed 's/DL //' | tr ',' '\n' | sed 's/^ *//;s/ *$//' | sort -u)
+
+        if [[ -z "$group_candidates" ]]; then
+            echo "Групи не знайдені в файлі $input_file"
+            exit 1
+        fi
+
+        mapfile -t groups <<< "$group_candidates"
+
+        if [[ ${#groups[@]} -eq 1 ]]; then
+            SELECTED_GROUP="${groups[0]}"
+            echo "Автоматично вибрана група: $SELECTED_GROUP"
+        else
+            select group in "${groups[@]}" "Вийти"; do
+                if [[ "$group" == "Вийти" ]]; then
+                    exit 0
+                elif [[ -n "$group" ]]; then
+                    SELECTED_GROUP="$group"
+                    break
+                else
+                    echo "Неправильне значення."
+                fi
+            done
+        fi
+    fi
+}
+
+if [[ "$1" == "--help" ]]; then
+    show_help
+    exit 0
+elif [[ "$1" == "--version" ]]; then
+    echo "$0 версия $VERSION"
+    exit 0
+fi
+
+QUIET=false
+
+if [[ "$1" == "-q" || "$1" == "--quiet" ]]; then
+    QUIET=true
+    shift
+fi
+if [[ -n "$2" ]]; then
+    GROUP="$1"
+    INPUT="$2"
+elif [[ -n "$1" && -f "$1" ]]; then
+    INPUT="$1"
+else
+    choose_csv_file
+    INPUT="$SELECTED_FILE"
+fi
+
+if [[ ! -f "$INPUT" ]]; then
+    echo "Помилка: Файл '$INPUT' не знайдено або він недоступний" >&2
+    exit 1
+fi
+
+if [[ -z "$GROUP" ]]; then
+    choose_group "$INPUT"
+    GROUP="$SELECTED_GROUP"
+else
+    group_found=$(iconv -f cp1251 -t UTF-8 "$INPUT" | sed 's/\r/\n/g' | awk -F',' -v g="$GROUP" '$1 ~ g {found=1} END {print found+0}')
+    if [[ "$group_found" -eq 0 ]]; then
+        echo "Групу '$GROUP' не знайдено в файлі '$INPUT'."
+        echo "Виберіть академічну групу:"
+        choose_group "$INPUT"
+        GROUP="$SELECTED_GROUP"
+    fi
+fi
+
+OUTPUT_FILE="Google_$(echo "$INPUT")"
+
+echo "Subject,Start date,Start time,End date,End time,Description" > "$OUTPUT_FILE"
+
+awk_result=$(cat "$INPUT" \
+    | sed 's/\r/\n/g' | iconv -f cp1251 -t utf-8 \
+    | awk -v GROUP="$GROUP" '
+BEGIN {
+    FPAT="([^,]*)|(\"[^\"]+\")"
+}
+NR == 1 { next }
+
+$1 ~ GROUP {
+    for (i=1; i<=NF; i++) gsub(/^"|"$/, "", $i)
+    sub(/^.* - /, "", $1)
+    subject = $1
+
+    gsub(/[[:space:]]+/, " ", subject)
+    gsub(/^[[:space:]]+|[[:space:]]+$/, "", subject)
+
+    split($2, sd, ".")
+    start_date = sd[3] sd[2] sd[1]
+
+    split($3, st, ":")
+    start_time = sprintf("%02d%02d", st[1], st[2])
+
+    sortkey = start_date start_time
+
+    line = subject "|" sortkey "|" $2 "|" $3 "|" $4 "|" $5
+
+    data[subject][count[subject]++] = line
+}
+
+END {
+    for (s in data) {
+        for (i = 0; i < count[s]; i++) {
+            split(data[s][i], parts, "|")
+            sortkeys[i] = parts[2]
+        }
+
+        for (i = 0; i < count[s]-1; i++) {
+            for (j = i+1; j < count[s]; j++) {
+                if (sortkeys[i] > sortkeys[j]) {
+                    tmp = sortkeys[i]; sortkeys[i] = sortkeys[j]; sortkeys[j] = tmp
+                    tmp = data[s][i]; data[s][i] = data[s][j]; data[s][j] = tmp
+                }
+            }
+        }
+
+        current_date = ""
+        current_number = 0
+        prev_lab = 0
+
+        for (i = 0; i < count[s]; i++) {
+            split(data[s][i], parts, "|")
+            subject = s
+            start_date = parts[3]
+            start_time = format_time(parts[4])
+            end_date = parts[5]
+            end_time = format_time(parts[6])
+
+            is_lab = (subject ~ / Лб /)
+
+            if (!is_lab) {
+                current_number++
+                title = subject "; №" current_number
+            } else {
+                if (start_date != current_date || !prev_lab) {
+                    current_number++
+                }
+                title = subject "; №" current_number
+            }
+
+            current_date = start_date
+            prev_lab = is_lab
+
+            print "\"" title "\"," format_date(start_date) "," start_time "," format_date(end_date) "," end_time ",\"" subject "\""
+        }
+    }
+}
+
+function format_date(d) {
+    split(d, p, ".")
+    return p[2] "/" p[1] "/" p[3]
+}
+
+function format_time(t) {
+    split(t, a, ":")
+    h = a[1] + 0
+    m = a[2] + 0
+    suffix = (h >= 12) ? "PM" : "AM"
+    if (h == 0) h = 12
+    else if (h > 12) h -= 12
+    return sprintf("%d:%02d %s", h, m, suffix)
+}
+')
+
+
+if [[ -z "$awk_result" ]]; then
+    echo "Помилка: У файлі '$INPUT' не знайдено жодного розкладу для групи '$GROUP'" >&2
+    exit 3
+fi
+
+echo "$awk_result" >> "$OUTPUT_FILE"
+
+if ! $QUIET; then
+    echo
+    cat "$OUTPUT_FILE"
+fi
+echo "Дані для групи '$GROUP' збережено в файл: $OUTPUT_FILE"

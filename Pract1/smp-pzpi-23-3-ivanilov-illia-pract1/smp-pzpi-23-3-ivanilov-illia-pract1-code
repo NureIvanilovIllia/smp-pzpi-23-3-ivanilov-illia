@@ -1,0 +1,77 @@
+#!/bin/bash
+
+treeHeight=$1
+snowWidth=$2
+
+if (( treeHeight < 8 || snowWidth < 7 )); then
+    echo "Помилка: неможливо побудувати ялинку" >&2
+    exit 1
+fi
+
+if (( treeHeight % 2 == 1 )); then
+    ((treeHeight--))
+fi
+
+if (( snowWidth % 2 == 0 )); then
+    ((snowWidth--))
+fi
+
+diff=$((treeHeight - snowWidth))
+if (( diff < 0 || diff > 2 )); then
+    echo "Помилка: різниця між висотою ялинки та шириною снігу повинна бути в діапазоні [0, 2]" >&2
+    exit 1
+fi
+
+sectionsHeight=$(((treeHeight - 3) / 2))
+
+print_layer() {
+    currentSymbols=$1
+    symbol="$2"
+    extraLine=$3
+
+    for ((j = 0; j < sectionsHeight + extraLine; j++)); do
+        spaceCount=$(((snowWidth - currentSymbols) / 2))
+        printf '%*s' "$spaceCount" ""
+
+        for ((k = 0; k < currentSymbols; k++)); do
+            printf '%s' "$symbol"
+        done
+
+        echo
+        ((currentSymbols += 2))
+
+        if [[ $symbol == "#" ]]; then
+            symbol="*"
+        else
+            symbol="#"
+        fi
+    done
+}
+
+lastSymbol="*"
+if (( sectionsHeight % 2 == 0 )); then
+    lastSymbol="#"
+fi
+
+print_layer 1 "*" 1
+print_layer 3 "$lastSymbol" 0
+
+space=$(((snowWidth - 3) / 2))
+spaces=""
+while (( space > 0 )); do
+    spaces+=" "
+    ((space--))
+done
+
+for i in {1 2}; do
+    echo "$spaces###"
+done
+
+snow=""
+counter=0
+until (( counter == snowWidth )); do
+    snow+="*"
+    ((counter++))
+done
+
+echo "$snow"
