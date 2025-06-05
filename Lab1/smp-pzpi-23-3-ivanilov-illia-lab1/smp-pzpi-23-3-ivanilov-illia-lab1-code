@@ -1,6 +1,7 @@
 #!/bin/bash
 
 VERSION="1.0"
+QUIET=false
 
 show_help() {
     echo "Використання: [--help | --version] | [[-q | --quiet] [академ_група] file.csv]"
@@ -40,7 +41,7 @@ choose_group() {
               sort -u))
 
     if [[ ${#groups[@]} -gt 0 ]]; then
-        echo "Доступні файли розкладу:"
+        echo "Доступні академічні групи розкладу:"
         select group in "${groups[@]}" "Вийти"; do
             if [[ "$group" == "Вийти" ]]; then
                 exit 0
@@ -65,30 +66,10 @@ choose_group() {
         if [[ ${#groups[@]} -eq 1 ]]; then
             SELECTED_GROUP="${groups[0]}"
             echo "Автоматично вибрана група: $SELECTED_GROUP"
-        else
-            select group in "${groups[@]}" "Вийти"; do
-                if [[ "$group" == "Вийти" ]]; then
-                    exit 0
-                elif [[ -n "$group" ]]; then
-                    SELECTED_GROUP="$group"
-                    break
-                else
-                    echo "Неправильне значення."
-                fi
-            done
         fi
     fi
 }
 
-if [[ "$1" == "--help" ]]; then
-    show_help
-    exit 0
-elif [[ "$1" == "--version" ]]; then
-    echo "$0 версия $VERSION"
-    exit 0
-fi
-
-QUIET=false
 
 if [[ "$1" == "-q" || "$1" == "--quiet" ]]; then
     QUIET=true
@@ -133,6 +114,21 @@ BEGIN {
     FPAT="([^,]*)|(\"[^\"]+\")"
 }
 NR == 1 { next }
+
+function format_date(d) {
+    split(d, p, ".")
+    return p[2] "/" p[1] "/" p[3]
+}
+
+function format_time(t) {
+    split(t, a, ":")
+    h = a[1] + 0
+    m = a[2] + 0
+    suffix = (h >= 12) ? "PM" : "AM"
+    if (h == 0) h = 12
+    else if (h > 12) h -= 12
+    return sprintf("%d:%02d %s", h, m, suffix)
+}
 
 $1 ~ GROUP {
     for (i=1; i<=NF; i++) gsub(/^"|"$/, "", $i)
@@ -201,21 +197,6 @@ END {
             print "\"" title "\"," format_date(start_date) "," start_time "," format_date(end_date) "," end_time ",\"" subject "\""
         }
     }
-}
-
-function format_date(d) {
-    split(d, p, ".")
-    return p[2] "/" p[1] "/" p[3]
-}
-
-function format_time(t) {
-    split(t, a, ":")
-    h = a[1] + 0
-    m = a[2] + 0
-    suffix = (h >= 12) ? "PM" : "AM"
-    if (h == 0) h = 12
-    else if (h > 12) h -= 12
-    return sprintf("%d:%02d %s", h, m, suffix)
 }
 ')
 
