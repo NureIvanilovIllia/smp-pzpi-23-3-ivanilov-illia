@@ -12,4 +12,4 @@ if (isset($_SESSION['userName'])) {
             <p><a href="<?php echo site_url('index.php?page=login'); ?>">Увійдіть в систему</a> для доступу до сайту.</p>
         </div>
     </div>
-</div> 
+</div>  

@@ -1,15 +1,6 @@
 <?php
-if (!isset($_SESSION['userName'])) {
-    redirect(site_url('index.php?page=page404'));
-}
-
 require_once 'data/user_data.php';
-
 $user = $_SESSION['userName'];
-if (!isset($userData[$user])) {
-    redirect(site_url('index.php?page=page404'));
-}
-
 $errors = [];
 $success = false;
 
@@ -154,16 +145,6 @@ $currentUserData = $userData[$user];
             
             <?php if ($success): ?>
                 <div class="message success">Дані успішно збережено!</div>
-            <?php endif; ?>
-
-            <?php if (!empty($errors)): ?>
-                <div class="message error">
-                    <ul>
-                        <?php foreach ($errors as $error): ?>
-                            <li><?php echo htmlspecialchars($error); ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
             <?php endif; ?>
 
             <form method="POST" action="<?php echo site_url('index.php?page=profile'); ?>" class="edit-form">

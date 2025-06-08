@@ -1,0 +1,488 @@
+ХАРКІВСЬКИЙ НАЦІОНАЛЬНИЙ
+УНІВЕРСИТЕТ РАДІОЕЛЕКТРОНІКИ
+ 
+Кафедра «Програмної інженерії»
+ 
+ 
+
+
+
+
+ЗВІТ
+з лабораторної роботи № 1
+з дисципліни «Скриптові мови програмування»
+ 
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+Виконав:                                                                                                Перевірив:
+ст. гр. ПЗПІ-23-3                                                                           Сокорчук Ігор Петрович
+Іванілов І. В.
+
+
+
+
+
+
+
+
+
+
+
+Харків 2025
+
+
+
+
+
+
+
+
+1 ІСТОРІЯ ЗМІН
+Таблиця 1.1 - Історія змін
+№
+	Дата
+	Версія звіту
+	Опис змін та виправлень
+	1
+	06.06.2025
+	0.1
+	Створено звіт
+	2
+	07.06.2025
+	0.2
+	Додано розділи 
+	3
+	08.06.2025
+	0.3
+	Додано додатки Б та В
+	4
+	08.06.2025
+	0.3
+	Додано додаток А - Відеозапис
+	2 ЗАВДАННЯ
+        – Додати до шапки сайту посилання на сторінку авторизації, яка буде доступна тільки не авторизованим користувачам та відображати її замість посилання на корзину;
+        – Обмежити доступ до сайту не авторизованим користувачам, тобто їм не доступний перегляд сайту і якщо користувач спробує перейти на посилання окрім сторінка логіну, то показувати йому сторінку page404.php;
+        – Для запам'ятовування авторизованого користувача в системі треба використовувати сесію, в якій буде зберігатися ім’я користувача та час, коли він авторизувався в ситемі;
+        – Створити сторінку логіна, на якій буде форма с двома полями введення пароля та імені користувача, а також кнопка відправлення форми;
+        – Створити сторінку профіля, на якій можна переглянути та відредагувати інформацію про користувача. На сторінці має бути форма, яка містить поля для введення імені, прізвища, дати народження , стислої інформації про користувача та фото користувача.
+3 ОПИС ВИКОНАНОЇ РОБОТИ
+        – Додано у файл шапки сайту посилання на форму логіна і робимо його видним тільки не авторизованим користувачам і показуємо його замість посилання на список покупок;
+        – Реалізовано збереження даних авторизованого користувача в сесії, в якій буде зберігатися ім’я користувача та час, коли він авторизувався в ситемі за допомогою session_start();
+        – Якщо користувач не авторизований, то він не має доступу до перегляду інших сторінок, крім сторінки для логіну. У разі спроби перейти на наступну сторінку буде виводитись вміст сторінки page404.php за допомогою redirect();
+        – Реалізовано сторінку логіну, де є форма с двома полями для введення ім’я користувача та паролю;
+        – Для зберігання даних користувача, було створено файл credential.php з таким вмістом:
+<?php
+$credentials = [
+    'userName' => 'Test',
+    'password' => '123123',
+];
+
+
+– Під час відправки форму надсилається POST запит з даними користувача, які перевіряються зі значеннями в credentials.php та в разу відповідності даних записуємо в сесію ім’я користувача та час, коли він авторизувався;
+– Коли користувач авторизувався в підвалі сайту буде з’являтися посилання для виходу с облікового сайти і при натисканні видаляти дані з сесії;
+– Реалізовано сторінку профілю, де можна переглянути і відредагувати інформацію користувача. Для зберігання даних користувача було створено файл user_data.php;
+– На сторінці має бути форма, яка містить поля для введення імені, прізвища, дати народження, стислої інформації про користувача і фото користувача. Для відправки файлу форма повинна мати кодування даних: enctype="multipart/form-data". На цій сторінці користувач може заповнити інформацію про себе. Під час натискання на кнопку "Зберегти" дані мають бути відправлені на сервер, перевірені на предмет помилок і збережені у файл user_data.php. 
+– Для валідації даних є такі умови: 
+– всі поля не порожні; 
+– ім'я та прізвище - це рядок, і довжина більше одного символу;
+– користувачеві має бути не менше 16 років;
+– стисла інформація має містити не менше 50 символів.
+
+
+4 ВИСНОВКИ
+У результаті виконання лабораторної роботи було створено базову систему авторизації користувача на сайті з використанням сесій. Реалізовано механізм контролю доступу до сторінок сайту, який забезпечує перегляд контенту лише авторизованими користувачами. Якщо користувач не авторизований, то будь-яка спроба перейти на інші сторінки, крім сторінки логіну, перенаправляє його на сторінку з повідомленням про помилку (page404.php).
+        Отримано навички використання сесій у PHP для зберігання даних про авторизованого користувача, зокрема ім’я користувача та час авторизації. Реалізовано динамічне відображення елементів інтерфейсу (посилання на логін чи кошик) залежно від стану авторизації.
+        Реалізоване програмне забезпечення відповідає поставленим вимогам: створено сторінку логіну з формою ведення облікових даних, перевірка яких здійснюється через окремий файл із заданими обліковими записами. Успішна авторизація відкриває доступ до сторінки профілю, де користувач може переглядати та редагувати особисті дані, що зберігаються у окремому файлі. Передбачено валідацію введених даних відповідно до встановлених критеріїв, а також можливість завантаження фотографії.
+        Таким чином, було створено повноцінний функціонал авторизації користувача з базовим керуванням сесією, обмеженням доступу та можливістю редагування профілю.
+ДОДАТОК А
+Відеозапис
+        Відеозапис презентації результатів лабораторної роботи: https://youtu.be/xTOfXohnGIU
+00:00 Представлення 
+00:27 Демонстрація роботи сайту
+02:06 Пояснення коду
+02:10 Оновлення шапки сайту
+03:00 Оновлення index.php
+03:29 Сторінка авторизації
+04:40 Сторінка профілю
+
+
+ДОДАТОК Б
+Графічні матеріали
+  
+
+Рисунок Б.1 – Сторінка 404
+  
+
+Рисунок Б.2 – сторінка логіну 
+  
+
+Рисунок Б.3 – Сторінка профіля 
+  
+
+Рисунок Б.4 – Форма для редагування даних користувача
+ДОДАТОК В
+Програмний код
+        В. 1 Файл credentials.php
+GitHub репозиторій: 
+https://github.com/NureIvanilovIllia/smp-pzpi-23-3-ivanilov-illia/blob/main/Lab4/smp-pzpi-23-3-ivanilov-illia-lab4/includes/credentials.php
+ 1 <?php
+ 2 $credentials = [
+ 3     'userName' => 'Test',
+ 4     'password' => '123123',
+ 5 ];
+
+
+
+
+        В. 1 Файл user_data.php
+GitHub репозиторій: 
+https://github.com/NureIvanilovIllia/smp-pzpi-23-3-ivanilov-illia/blob/main/Lab4/smp-pzpi-23-3-ivanilov-illia-lab4/data/user_data.php
+ 1 <?php $userData = array (
+ 2   'Test' =>
+ 3   array (
+ 4     'userName' => 'Test',
+ 5     'firstName' => 'Ілля',
+ 6     'lastName' => 'Іванілов',
+ 7     'birthDate' => '2006-07-09',
+ 8     'bio' => 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse aliquet porttitor lacinia. Morbi eu bibendum arcu. Vestibulum at rutrum magna. Donec et mi maximus, condimentum nunc in, dapibus augue. Suspendisse a placerat felis. Pellentesque eleifend facilisis enim, eget viverra lacus fermentum eget. In consectetur rutrum eros, eget convallis magna eleifend a. Donec mattis egestas ligula non accumsan. Donec varius sed metus ut sodales. Suspendisse id nisl lacus.',
+ 9     'photo' => '6844e6221eff8_unnamed.jpg',
+10   ),
+11 );
+
+
+
+
+
+
+        В. 1 Файл page404.php
+GitHub репозиторій: 
+https://github.com/NureIvanilovIllia/smp-pzpi-23-3-ivanilov-illia/blob/main/Lab4/smp-pzpi-23-3-ivanilov-illia-lab4/templates/page404.php
+ 1 <?php
+ 2 if (isset($_SESSION['userName'])) {
+ 3     redirect(site_url('index.php'));
+ 4 }
+ 5 ?>
+ 6
+ 7 <div>
+ 8     <div>
+ 9         <div>
+10             <h1>404</h1>
+11             <h2>Сторінку не знайдено</h2>
+12             <p><a href="<?php echo site_url('index.php?page=login'); ?>">Увійдіть в систему</a> для доступу до сайту.</p>
+13         </div>
+14     </div>
+15 </div>
+
+
+
+
+
+
+
+
+        В. 1 Файл login.php
+GitHub репозиторій: 
+https://github.com/NureIvanilovIllia/smp-pzpi-23-3-ivanilov-illia/blob/main/Lab4/smp-pzpi-23-3-ivanilov-illia-lab4/templates/login.php
+ 1 <?php
+ 2 if (isset($_SESSION['userName'])) {
+ 3     redirect(site_url('index.php'));
+ 4 }
+ 5
+ 6 $error = '';
+ 7 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+ 8     require_once 'includes/credentials.php';
+ 9
+10     $userName = $_POST['userName'] ?? '';
+11     $password = $_POST['password'] ?? '';
+12
+13     if (empty($userName) || empty($password)) {
+14         $error = 'Будь ласка, заповніть всі поля';
+15     } elseif ($userName === $credentials['userName'] && $password === $credentials['password']) {
+16         $_SESSION['userName'] = $userName;
+17         $_SESSION['loginTime'] = time();
+18         redirect(site_url('index.php'));
+19     } else {
+20         $error = 'Невірний логін або пароль';
+21     }
+22 }
+23 ?>
+24
+25 <div>
+26     <div>
+27         <h3>Вхід в систему</h3>
+28     </div>
+29     <div>
+30         <?php if ($error): ?>
+31             <div><?php echo htmlspecialchars($error); ?></div>
+32         <?php endif; ?>
+33
+34         <form method="POST" action="<?php echo site_url('index.php?page=login'); ?>">
+35             <div>
+36                 <label for="userName" class="form-label">Ім'я користувача</label>
+37                 <input type="text" class="form-control" id="userName" name="userName" required>
+38             </div>
+39             <div>
+40                 <label for="password" class="form-label">Пароль</label>
+41                 <input type="password" class="form-control" id="password" name="password" required>
+42             </div>
+43             <div>
+44                 <button type="submit" class="btn btn-primary">Увійти</button>
+45             </div>
+46         </form>
+47     </div>
+48 </div>
+
+
+
+
+
+
+        
+
+
+
+
+
+
+В. 1 Файл profile.php
+GitHub репозиторій: 
+https://github.com/NureIvanilovIllia/smp-pzpi-23-3-ivanilov-illia/blob/main/Lab4/smp-pzpi-23-3-ivanilov-illia-lab4/templates/profile.php
+ 1 <?php
+ 2 if (!isset($_SESSION['userName'])) {
+ 3     redirect(site_url('index.php?page=page404'));
+ 4 }
+
+
+ 5 require_once 'data/user_data.php';
+
+
+ 6 $user = $_SESSION['userName'];
+ 7 if (!isset($userData[$user])) {
+ 8     redirect(site_url('index.php?page=page404'));
+ 9 }
+
+
+10 $errors = [];
+11 $success = false;
+
+
+12 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+13     $action = $_POST['action'] ?? '';
+
+
+14     if ($action === 'update_photo') {
+15         $file = $_FILES['photo'] ?? null;
+
+
+16         if ($file && $file['error'] === UPLOAD_ERR_OK) {
+17             $typeOK = in_array($file['type'], ['image/jpeg', 'image/png', 'image/gif']);
+18             $sizeOK = $file['size'] <= 5 * 1024 * 1024;
+
+
+19             if (!$typeOK) {
+20                 $errors[] = "Дозволені тільки зображення JPG, PNG або GIF";
+21             } elseif (!$sizeOK) {
+22                 $errors[] = "Максимальний розмір — 5MB";
+23             } else {
+24                 $uploadDir = __DIR__ . '/../uploads/';
+25                 if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+
+
+26                 $fileName = uniqid() . '_' . basename($file['name']);
+27                 $filePath = $uploadDir . $fileName;
+
+
+28                 if (move_uploaded_file($file['tmp_name'], $filePath)) {
+29                     $oldPhoto = $userData[$user]['photo'] ?? '';
+30                     if ($oldPhoto && file_exists($uploadDir . $oldPhoto)) {
+31                         unlink($uploadDir . $oldPhoto);
+32                     }
+
+
+33                     $userData[$user]['photo'] = $fileName;
+34                     file_put_contents(__DIR__ . '/../data/user_data.php', '<?php $userData = ' . var_export($userData, true) . ';');
+35                     $success = true;
+36                 } else {
+37                     $errors[] = "Помилка завантаження файлу";
+38                 }
+39             }
+40         } else {
+41             $errors[] = "Оберіть файл для завантаження";
+42         }
+43     } else {
+44         $firstName = trim($_POST['firstName'] ?? '');
+45         $lastName = trim($_POST['lastName'] ?? '');
+46         $birthDate = trim($_POST['birthDate'] ?? '');
+47         $bio = trim($_POST['bio'] ?? '');
+
+
+48         if (!$firstName || !preg_match('/^[\p{L}\s-]{2,}$/u', $firstName)) {
+49             $errors[] = "Ім’я має бути не коротше 2 літер і тільки з букв";
+50         }
+
+
+51         if (!$lastName || !preg_match('/^[\p{L}\s-]{2,}$/u', $lastName)) {
+52             $errors[] = "Прізвище має бути не коротше 2 літер і тільки з букв";
+53         }
+
+
+54         if ($birthDate) {
+55             $age = (new DateTime())->diff(new DateTime($birthDate))->y;
+56             if ($age < 16) $errors[] = "Вам має бути мінімум 16 років";
+57         } else {
+58             $errors[] = "Дата народження обов'язкова";
+59         }
+
+
+60         if (strlen($bio) < 50) {
+61             $errors[] = "Коротка інформація повинна бути мінімум 50 символів";
+62         }
+
+
+63         if (!$errors) {
+64             $userData[$user] = [
+65                 'userName' => $user,
+66                 'firstName' => $firstName,
+67                 'lastName' => $lastName,
+68                 'birthDate' => $birthDate,
+69                 'bio' => $bio,
+70                 'photo' => $userData[$user]['photo'] ?? ''
+71             ];
+72             file_put_contents(__DIR__ . '/../data/user_data.php', '<?php $userData = ' . var_export($userData, true) . ';');
+73             $success = true;
+74         }
+75     }
+76 }
+
+
+77 $currentUserData = $userData[$user];
+78 ?>
+
+
+
+
+79 <div class="profile-container">
+80     <div class="profile-header">
+81         <h2>Профіль користувача</h2>
+82     </div>
+
+
+83     <div class="profile-content">
+84         <div class="profile-info">
+85             <div class="info-group">
+86                 <h3>Фотографія</h3>
+87                 <div class="photo-container">
+88                     <?php if (!empty($currentUserData['photo'])): ?>
+89                         <img src="<?php echo site_url('uploads/' . $currentUserData['photo']); ?>" alt="Фото профілю" class="profile-photo">
+90                     <?php else: ?>
+91                         <div class="no-photo">Немає фото</div>
+92                     <?php endif; ?>
+93
+94                     <form method="POST" action="<?php echo site_url('index.php?page=profile'); ?>" enctype="multipart/form-data" class="photo-form">
+95                         <input type="hidden" name="action" value="update_photo">
+96                         <div class="form-group">
+97                             <label for="photo">Змінити фото:</label>
+98                             <input type="file" id="photo" name="photo" accept="image/*" required>
+99                         </div>
+100                         <button type="submit" class="btn-save">Завантажити</button>
+101                     </form>
+102                 </div>
+103             </div>
+
+
+104             <div class="info-group">
+105                 <h3>Основна інформація</h3>
+106                 <div class="info-item">
+107                     <span class="info-label">UserName:</span>
+108                     <span class="info-value"><?php echo htmlspecialchars($currentUserData['userName']); ?></span>
+109                 </div>
+110                 <div class="info-item">
+111                     <span class="info-label">Ім'я:</span>
+112                     <span class="info-value"><?php echo htmlspecialchars($currentUserData['firstName']); ?></span>
+113                 </div>
+114                 <div class="info-item">
+115                     <span class="info-label">Прізвище:</span>
+116                     <span class="info-value"><?php echo htmlspecialchars($currentUserData['lastName']); ?></span>
+117                 </div>
+118                 <div class="info-item">
+119                     <span class="info-label">Дата народження:</span>
+120                     <span class="info-value"><?php echo htmlspecialchars($currentUserData['birthDate']); ?></span>
+121                 </div>
+122             </div>
+
+
+123             <div class="info-group">
+124                 <h3>Коротка інформація</h3>
+125                 <div class="info-item bio">
+126                     <span class="info-value"><?php echo nl2br(htmlspecialchars($currentUserData['bio'])); ?></span>
+127                 </div>
+128             </div>
+129         </div>
+
+
+130         <div class="profile-edit">
+131             <h3>Редагування профілю</h3>
+132
+133             <?php if ($success): ?>
+134                 <div class="message success">Дані успішно збережено!</div>
+135             <?php endif; ?>
+
+
+136             <?php if (!empty($errors)): ?>
+137                 <div class="message error">
+138                     <ul>
+139                         <?php foreach ($errors as $error): ?>
+140                             <li><?php echo htmlspecialchars($error); ?></li>
+141                         <?php endforeach; ?>
+142                     </ul>
+143                 </div>
+144             <?php endif; ?>
+
+
+145             <form method="POST" action="<?php echo site_url('index.php?page=profile'); ?>" class="edit-form">
+146                 <div class="form-group">
+147                     <label for="firstName">Ім'я:</label>
+148                     <input type="text" id="firstName" name="firstName" value="<?php echo htmlspecialchars($currentUserData['firstName']); ?>" required>
+149                 </div>
+
+
+150                 <div class="form-group">
+151                     <label for="lastName">Прізвище:</label>
+152                     <input type="text" id="lastName" name="lastName" value="<?php echo htmlspecialchars($currentUserData['lastName']); ?>" required>
+153                 </div>
+
+
+154                 <div class="form-group">
+155                     <label for="birthDate">Дата народження:</label>
+156                     <input type="date" id="birthDate" name="birthDate" value="<?php echo htmlspecialchars($currentUserData['birthDate']); ?>" required>
+157                 </div>
+
+
+158                 <div class="form-group">
+159                     <label for="bio">Коротка інформація:</label>
+160                     <textarea id="bio" name="bio" rows="4" required><?php echo htmlspecialchars($currentUserData['bio']); ?></textarea>
+161                 </div>
+
+
+162                 <div class="form-group">
+163                     <button type="submit" class="btn-save">Зберегти зміни</button>
+164                 </div>
+165             </form>
+166         </div>
+167     </div>
+168 </div>
+
+
+________________

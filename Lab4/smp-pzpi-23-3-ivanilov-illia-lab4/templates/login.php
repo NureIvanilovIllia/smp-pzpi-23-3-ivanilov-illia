@@ -1,8 +1,4 @@
 <?php
-if (isset($_SESSION['userName'])) {
-    redirect(site_url('index.php'));
-}
-
 $error = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     require_once 'includes/credentials.php';

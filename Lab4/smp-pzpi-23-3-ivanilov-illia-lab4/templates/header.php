@@ -1,10 +1,8 @@
 <?php
-// templates/header.php
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Check if user is not logged in and trying to access protected pages
 if (!isset($_SESSION['userName']) && !in_array($_GET['page'] ?? '', ['login', 'page404'])) {
     redirect(site_url('index.php?page=page404'));
 }
