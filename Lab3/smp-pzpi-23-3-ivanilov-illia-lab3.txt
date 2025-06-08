@@ -1,0 +1,629 @@
+ХАРКІВСЬКИЙ НАЦІОНАЛЬНИЙ
+УНІВЕРСИТЕТ РАДІОЕЛЕКТРОНІКИ
+ 
+Кафедра «Програмної інженерії»
+ 
+ 
+
+
+
+
+ЗВІТ
+з лабораторної роботи № 1
+з дисципліни «Скриптові мови програмування»
+ 
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+Виконав:                                                                                                Перевірив:
+ст. гр. ПЗПІ-23-3                                                                           Сокорчук Ігор Петрович
+Іванілов І. В.
+
+
+
+
+
+
+
+
+
+
+
+Харків 2025
+
+
+
+
+
+
+
+
+1 ІСТОРІЯ ЗМІН
+Таблиця 1.1 - Історія змін
+№
+	Дата
+	Версія звіту
+	Опис змін та виправлень
+	1
+	04.06.2025
+	0.1
+	Створено звіт
+	2
+	04.06.2025
+	0.1
+	Додано розділи 
+	3
+	08.06.2025
+	0.2
+	Додано додатки Б та В
+	4
+	08.06.2025
+	0.3
+	Додано додаток А - Відеозапис
+	2 ЗАВДАННЯ
+– Реалізувати робочий сайт з інтернет-магазином, який складається з таких розділів: сторінка товарів, сторінка “Кошик”, домашня сторінка та сторінка з інформацією про магазин;
+– Кожна сторінка має включати в себе такі частини: шапка сторінки, тіло сторінки, підвал сторінки;
+– Дані про товари, а саме назва та ціна повинні зберігатися в базі даних SQLite. Для того, щоб мати доступ до роботи з базою даних треба перед цим підключитися до неї та попередньо створити таблицю товарів за допомогою SQL запитів;
+– На сторінці товарів необхідно відобразити список доступних для покупки з можливістю обрати кількість товарів та додавання до кошика. Для отримання даних про товари використати GET запит до серверу;
+– При додаванні товара в кошик, перед цим вказавши кількість цього товару, має відбуватися POST запит на сервер, де дані зберігаються в сесію;
+– На сторінці “Кошик” необхідно реалізувати перегляд продуктів, їх суму та кінцеву суму всіх покупок, які було обрано на сторінці продуктів. Також веб-сайт повинен забезпечувати можливість видалити товар, оновити кількість товару та видалити всі товари з кошику;
+– Обробляти некоректне введення даних, наприклад кількість товару, яке може бути додано до кошика не може перевищувати 100.
+3 ОПИС ВИКОНАНОЇ РОБОТИ
+– Реалізований сайт має наступну структуру:
+* index.php – головний файл, який обробляє всі запити;
+* init_db.php – файл для ініціалізації бази даних;
+* includes/ – директорія з допоміжними файлами;
+* db.php – функції для роботи з базою даних;
+* functions.php – загальні функції для роботи з кошиков та URL;
+* templates/ – директорія з шаблонами сторінок;
+* header.php – шапка сайту;
+* footer.php – підвал сайту;
+* home.php – домашня сторінка;
+* products.php – сторінка товарів;
+* cart.php – сторінка кошика;
+* about.php – сторінка з інформацією про магазин;
+* data/ – директорія для зберігання бази даних;
+* store.db – файл з базою даних;
+        – Реалізовано інтерфейс користувача, який складається з навігаційним меню в шапці, відображення кількості товарів у кошику, формами додавання товарів та підвалом з навігацією по сайту;
+– База даних реалізована на SQLite з використанням PDO. В файлі init-db.php ініціалізується база даних та створюється таблиця products з полями: id, name, price;
+– В файлі db.php реалізовані функції для отримання підключення до бази даних через PDO, отримання всіх товарів та отримання товару за ID через SQL запити;
+– Робота з кошиком реалізовано в файлі functions.php. В ньому наявні: 
+* функція для додавання товару, яка ініціалізує кошик в сесії, якщо він не існує, отримує інформацію про товар з бази даних і якщо товар вже є в кошику – додає кількість, якщо нема – створює новий запис;
+* функція видалення товару з кошика, яка перевіряє наявність товару в кошику та видаляє його;
+* функція для оновлення кількості товару – перевіряє: якщо кількість менше, або дорівнює нулю, то видаляє товар, а інакше оновлює кількість товару;
+* функція, яка повертає масив товарів з кошика;
+* функція для отримання кінцевої суми, яка проходить по всіх товарів в кошику, множить ціну на кількість для кожного товару та повертає загальну суму;
+* функція для очищення кошику;
+        – Обробка запитів реалізована в файлі index.php. Де кожна дія перевіряє наявність необхідних параметрів, потім викликає відповідну функцію та перенаправляє на відповідну сторінку.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+4 ВИСНОВКИ
+У результаті виконання лабораторної роботи було створено повнофункціональний веб-сайт інтернет-магазину, який відповідає поставленим вимогам. Реалізовано чотири основні сторінки: домашню, сторінку товарів, кошик та сторінку з інформацією про магазин. Кожна сторінка включає спільні частини інтерфейсу — шапку, тіло та підвал — що забезпечує єдиний стиль та зручну навігацію.
+        Отримано практичні навички: роботи з базою даних SQLite через PDO в PHP, обробки GET- і POST-запитів для реалізації взаємодії користувача з кошиком, використання сесій для збереження стану кошика.
+        Реалізоване програмне забезпечення дозволяє: переглядати список товарів із бази даних, додавати товари до кошика з вказаною кількістю, редагувати кількість товарів, видаляти окремі товари або очищувати весь кошик, автоматично обчислювати підсумкову вартість замовлення.
+ДОДАТОК А
+Відеозапис
+        Відеозапис презентації результатів лабораторної роботи: https://youtu.be/qzrfi1snAL4
+00:00 Представлення
+00:22 Презентація веб сайту
+01:35 Початок пояснення коду
+01:38 Ініціалізація бази даних (init_db.php)
+03:46 Функції для роботи з базою даних (db.php)
+05:28 Функція для роботи з корзиною (functions.php)
+09:05 Основний контролер сайту (index.php)
+12:13 Сторінка продуктів (products.php)
+13:22 Шапка сайту (header.php)
+13:40 Головна сторінка (home.php)
+13:45 Підвал сайту (footer.php)
+13:51 Сторінка корзини (cart.php)
+15:50 Сторінка інформації про сайт (about.php)
+ДОДАТОК Б
+Графічні матеріали
+  
+
+Рисунок Б.1 – Головний екран сайту
+  
+
+Рисунок Б.3 – Сторінка товарів
+  
+
+
+
+Рисунок Б.3 – Сторінка порожнього кошику
+  
+
+Рисунок Б.4 – Сторінка кошику з доданим товаром
+  
+
+Рисунок Б.4 – Результат оновлення кількості товарів 
+  
+
+Рисунок Б.5 – Результат видалення товару з кошика
+ДОДАТОК В
+Програмний код
+        В. 1 Файл init_db.php
+GitHub репозиторій: https://github.com/NureIvanilovIllia/smp-pzpi-23-3-ivanilov-illia/blob/main/Lab3/smp-pzpi-23-3-ivanilov-illia-lab3/init_db.php
+ 1 <?php
+ 2 $dbFile = 'data/store.db';
+ 3 $dsn = 'sqlite:' . $dbFile;
+ 4
+ 5 try {
+ 6     $pdo = new PDO($dsn);
+ 7     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+ 8
+ 9     $pdo->exec("
+10         CREATE TABLE IF NOT EXISTS products (
+11             id INTEGER PRIMARY KEY,
+12             name TEXT NOT NULL,
+13             price REAL NOT NULL
+14         )
+15     ");
+16
+17     $result = $pdo->query("SELECT COUNT(*) FROM products");
+18
+19     if ($result == 0) {
+20
+21         $products = [
+22             [1, "Молоко пастеризоване", 12],
+23             [2, "Хліб чорний", 9],
+24             [3, "Сир білий", 21],
+25             [4, "Сметана 20%", 25],
+26             [5, "Кефір 1%", 19],
+27             [6, "Вода газована", 18],
+28             [7, "Печиво \"Весна\"", 14]
+29         ];
+30
+31         $stmt = $pdo->prepare("INSERT INTO products (id, name, price) VALUES (?, ?, ?)");
+32
+33         foreach ($products as $p) {
+34             $stmt->execute([$p[0], $p[1], $p[2]]);
+35         }
+36
+37     } else {
+38         echo "Таблиця вже має дані.\n";
+39     }
+40
+41
+42 } catch (PDOException $e) {
+43     echo "Помилка бази даних: " . $e->getMessage() . "\n";
+44     exit(1);
+45 }
+
+
+
+
+
+
+        В. 2 Файл db.php
+GitHub репозиторій: 
+https://github.com/NureIvanilovIllia/smp-pzpi-23-3-ivanilov-illia/blob/main/Lab3/smp-pzpi-23-3-ivanilov-illia-lab3/includes/db.php
+ 1 <?php
+ 2 function getDB() {
+ 3     static $pdo = null;
+ 4     if ($pdo === null) {
+ 5         $dbFile = 'data/store.db';
+ 6         $dsn = 'sqlite:' . $dbFile;
+ 7         try {
+ 8             $pdo = new PDO($dsn);
+ 9             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+10             $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+11         } catch (PDOException $e) {
+12             error_log("Помилка підключення бази даних: " . $e->getMessage());
+13         }
+14     }
+15     return $pdo;
+16 }
+17
+18 function getAllProducts() {
+19     $pdo = getDB();
+20     $stmt = $pdo->query("SELECT * FROM products");
+21     return $stmt->fetchAll();
+22 }
+23
+24 function getProductById($id) {
+25     $pdo = getDB();
+26     $stmt = $pdo->prepare("SELECT * FROM products WHERE id = :id");
+27     $stmt->bindParam(':id', $id);
+28     $stmt->execute();
+29     return $stmt->fetch();
+30 }
+31 ?>
+        В. 3 Файл functions.php
+GitHub репозиторій: 
+https://github.com/NureIvanilovIllia/smp-pzpi-23-3-ivanilov-illia/blob/main/Lab3/smp-pzpi-23-3-ivanilov-illia-lab3/includes/functions.php
+ 1 <?php
+ 2
+ 3 function addToCart($productId, $quantity = 1) {
+ 4     if (!isset($_SESSION['cart'])) {
+ 5         $_SESSION['cart'] = [];
+ 6     }
+ 7
+ 8     $productId = (int)$productId;
+ 9     $quantity = (int)$quantity;
+10
+11     if ($quantity <= 0) return;
+12
+13     $product = getProductById($productId);
+14     if (!$product) return;
+15
+16     if (isset($_SESSION['cart'][$productId])) {
+17         $_SESSION['cart'][$productId]['quantity'] += $quantity;
+18     } else {
+19         $_SESSION['cart'][$productId] = [
+20             'id' => $productId,
+21             'name' => $product['name'],
+22             'price' => $product['price'],
+23             'quantity' => $quantity
+24         ];
+25     }
+26 }
+27
+28 function removeFromCart($productId) {
+29     $productId = (int)$productId;
+30     if (isset($_SESSION['cart'][$productId])) {
+31         unset($_SESSION['cart'][$productId]);
+32     }
+33 }
+34
+35 function updateCartQuantity($productId, $quantity) {
+36     $productId = (int)$productId;
+37     $quantity = (int)$quantity;
+38
+39     isset($_SESSION['cart'][$productId]);
+40     $_SESSION['cart'][$productId]['quantity'] = $quantity;
+41 }
+42
+43 function getCartItems() {
+44     return $_SESSION['cart'] ?? [];
+45 }
+46
+47 function getCartTotal() {
+48     $total = 0;
+49     foreach (getCartItems() as $item) {
+50         $total += $item['price'] * $item['quantity'];
+51     }
+52     return $total;
+53 }
+54
+55 function clearCart() {
+56     $_SESSION['cart'] = [];
+57 }
+58
+59 function site_url($path = '') {
+60     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https" : "http";
+61     $host = $_SERVER['HTTP_HOST'];
+62     $script_name = $_SERVER['SCRIPT_NAME'];
+63
+64     $base_path = dirname($script_name);
+65     if ($base_path === '/' || $base_path === '\\') {
+66         $base_path = '';
+67     }
+68
+69     return $protocol . "://" . $host . $base_path . '/' . ltrim($path, '/');
+70 }
+71
+72 function redirect($url) {
+73     header("Location: " . $url);
+74     exit;
+75 }
+76 ?>
+
+
+
+
+        В. 4 Файл index.php
+GitHub репозиторій: 
+https://github.com/NureIvanilovIllia/smp-pzpi-23-3-ivanilov-illia/blob/main/Lab3/smp-pzpi-23-3-ivanilov-illia-lab3/index.php
+ 1 <?php
+ 2
+ 3 if (session_status() == PHP_SESSION_NONE) {
+ 4     session_start();
+ 5 }
+ 6
+ 7 require_once 'includes/db.php';
+ 8 require_once 'includes/functions.php';
+ 9
+10 $action = $_POST['action'] ?? $_GET['action'] ?? null;
+11 if ($action && ($_SERVER['REQUEST_METHOD'] === 'POST' || in_array($action, ['remove_from_cart', 'clear_cart', 'logout']))) {
+12     switch ($action) {
+13         case 'add_to_cart':
+14             $productId = $_POST['product_id'] ?? null;
+15             $quantity = $_POST['quantity'] ?? null;
+16             if ($productId && $quantity) {
+17                 addToCart($productId, $quantity);
+18                 $_SESSION['message'] = "Товар додано до кошика!";
+19                 $_SESSION['message_type'] = "success";
+20             } else {
+21                 $_SESSION['message'] = "Помилка: ID товару або кількість не вказано.";
+22                 $_SESSION['message_type'] = "error";
+23             }
+24             redirect(site_url('index.php?page=products'));
+25             break;
+26
+27         case 'remove_from_cart':
+28             $productId = $_POST['product_id'] ?? $_GET['product_id'] ?? null;
+29             if ($productId) {
+30                 removeFromCart($productId);
+31                 $_SESSION['message'] = "Товар видалено з кошика.";
+32             }
+33             redirect(site_url('index.php?page=cart'));
+34             break;
+35
+36         case 'update_cart_item':
+37             $productId = $_POST['product_id'] ?? null;
+38             $quantity = $_POST['quantity'] ?? null;
+39             if ($productId && $quantity) {
+40                 updateCartQuantity($productId, $quantity);
+41                 $_SESSION['message'] = "Кількість товару оновлено.";
+42             }
+43             redirect(site_url('index.php?page=cart'));
+44             break;
+45
+46         case 'clear_cart':
+47             clearCart();
+48             $_SESSION['message'] = "Кошик очищено.";
+49             redirect(site_url('index.php?page=cart'));
+50             break;
+51     }
+52 }
+53
+54
+55 $page = $_GET['page'] ?? 'home';
+56
+57 require_once 'templates/header.php';
+58
+59 switch ($page) {
+60     case 'products':
+61         require_once 'templates/products.php';
+62         break;
+63     case 'cart':
+64         require_once 'templates/cart.php';
+65         break;
+66     case 'about':
+67         require_once 'templates/about.php';
+68         break;
+69     case 'home':
+70     default:
+71         require_once 'templates/home.php';
+72         break;
+73 }
+74
+75 require_once 'templates/footer.php';
+76 ?>
+
+
+
+
+
+
+        В. 5 Файл products.php
+GitHub репозиторій: 
+https://github.com/NureIvanilovIllia/smp-pzpi-23-3-ivanilov-illia/blob/main/Lab3/smp-pzpi-23-3-ivanilov-illia-lab3/templates/products.php
+ 1 <?php
+ 2 $products = getAllProducts();
+ 3 ?>
+ 4 <h2>Наші Товари</h2>
+ 5
+ 6 <?php if (isset($_SESSION['message'])): ?>
+ 7     <div class="message <?php echo $_SESSION['message_type'] ?? 'success'; ?>">
+ 8         <?php echo htmlspecialchars($_SESSION['message']); ?>
+ 9     </div>
+10     <?php
+11     unset($_SESSION['message']);
+12     unset($_SESSION['message_type']);
+13     ?>
+14 <?php endif; ?>
+15
+16 <?php if (empty($products)): ?>
+17     <p>На жаль, на даний момент товарів немає.</p>
+18 <?php else: ?>
+19     <ul class="products-list">
+20         <?php foreach ($products as $product): ?>
+21             <li>
+22                 <div class="product-info">
+23                     <h3><?php echo $product['name']; ?></h3>
+24                     <p>Ціна: <?php echo number_format($product['price'], 2); ?> грн</p>
+25                 </div>
+26                 <div class="product-actions">
+27                     <form action="<?php echo site_url('index.php?action=add_to_cart'); ?>" method="post">
+28                         <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
+29                         <label for="quantity_<?php echo $product['id']; ?>">К-сть:</label>
+30                         <input type="number" id="quantity_<?php echo $product['id']; ?>" name="quantity" value="1" min="1" max="100" style="width: 50px;">
+31                         <input type="submit" value="Додати в кошик">
+32                     </form>
+33                 </div>
+34             </li>
+35         <?php endforeach; ?>
+36     </ul>
+37 <?php endif; ?>
+
+
+
+
+        В. 6 Файл cart.php
+GitHub репозиторій: 
+https://github.com/NureIvanilovIllia/smp-pzpi-23-3-ivanilov-illia/blob/main/Lab3/smp-pzpi-23-3-ivanilov-illia-lab3/templates/cart.php
+ 1 <?php
+ 2 $cartItems = getCartItems();
+ 3 $cartTotal = getCartTotal();
+ 4 ?>
+ 5 <h2>Ваш Кошик</h2>
+ 6
+ 7 <?php if (isset($_SESSION['message'])): ?>
+ 8     <div class="message <?php echo $_SESSION['message_type'] ?? 'success'; ?>">
+ 9         <?php echo htmlspecialchars($_SESSION['message']); ?>
+10     </div>
+11     <?php
+12     unset($_SESSION['message']);
+13     unset($_SESSION['message_type']);
+14     ?>
+15 <?php endif; ?>
+16
+17 <?php if (empty($cartItems)): ?>
+18     <p>Ваш кошик порожній. <a href="<?php echo site_url('index.php?page=products'); ?>">Перейти до товарів</a>.</p>
+19 <?php else: ?>
+20     <ul class="cart-items">
+21         <?php foreach ($cartItems as $item): ?>
+22             <li>
+23                 <div class="item-info">
+24                     <h3><?php echo $item['name']; ?></h3>
+25                     <p>Ціна: <?php echo number_format($item['price'], 2); ?> грн</p>
+26                     <form action="<?php echo site_url('index.php?action=update_cart_item'); ?>" method="post" style="display:inline;">
+27                         <input type="hidden" name="product_id" value="<?php echo $item['id']; ?>">
+28                         <label for="quantity_cart_<?php echo $item['id']; ?>">К-сть:</label>
+29                         <input type="number" id="quantity_cart_<?php echo $item['id']; ?>" name="quantity" value="<?php echo $item['quantity']; ?>" min="0">
+30                         <input type="submit" value="Оновити">
+31                     </form>
+32                 </div>
+33                 <div class="item-actions">
+34                     <p>Разом: <?php echo number_format($item['price'] * $item['quantity'], 2); ?> грн</p>
+35                     <form action="<?php echo site_url('index.php?action=remove_from_cart'); ?>" method="post">
+36                         <input type="hidden" name="product_id" value="<?php echo $item['id']; ?>">
+37                         <input type="submit" value="Видалити" style="background-color:#dc3545;">
+38                     </form>
+39                 </div>
+40             </li>
+41         <?php endforeach; ?>
+42     </ul>
+43     <div class="cart-total">
+44         Загальна сума: <?php echo number_format($cartTotal, 2); ?> грн
+45     </div>
+46     <div class="cart-actions">
+47         <a href="<?php echo site_url('index.php?page=products'); ?>" style="background-color:#007bff;">Продовжити покупки</a>
+48         <form action="<?php echo site_url('index.php?action=clear_cart'); ?>" method="post" style="display:inline;">
+49             <button type="submit" class="clear-cart">Очистити кошик</button>
+50         </form>
+51     </div>
+52 <?php endif; ?>
+        В. 7 Файл header.php
+GitHub репозиторій: 
+https://github.com/NureIvanilovIllia/smp-pzpi-23-3-ivanilov-illia/blob/main/Lab3/smp-pzpi-23-3-ivanilov-illia-lab3/templates/header.php
+ 1 <?php
+ 2 if (session_status() == PHP_SESSION_NONE) {
+ 3     session_start();
+ 4 }
+ 5 ?>
+ 6 <!DOCTYPE html>
+ 7 <html lang="uk">
+ 8 <head>
+ 9     <meta charset="UTF-8">
+10     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+11     <title>Весна</title>
+12     <link rel="stylesheet" href="<?php echo site_url('css/style.css'); ?>">
+13 </head>
+14 <body>
+15     <header>
+16         <div class="container">
+17             <h1><a href="<?php echo site_url('index.php?page=home'); ?>" style="color:black; text-decoration:none;">Продовольчий магазин "Весна"</a></h1>
+18             <nav>
+19                 <ul>
+20                     <li><a href="<?php echo site_url('index.php?page=home'); ?>">Головна</a></li>
+21                     <li><a href="<?php echo site_url('index.php?page=products'); ?>">Товари</a></li>
+22                     <li><a href="<?php echo site_url('index.php?page=cart'); ?>">Кошик (<?php
+23                         $itemCount = 0;
+24                         if (!empty($_SESSION['cart'])) {
+25                             foreach($_SESSION['cart'] as $item) {
+26                                 $itemCount += $item['quantity'];
+27                             }
+28                         }
+29                         echo $itemCount;
+30                     ?>)</a></li>
+31                 </ul>
+32             </nav>
+33         </div>
+34     </header>
+35     <div class="container">
+
+
+
+
+
+
+        В. 9 Файл footer.php
+GitHub репозиторій: 
+https://github.com/NureIvanilovIllia/smp-pzpi-23-3-ivanilov-illia/blob/main/Lab3/smp-pzpi-23-3-ivanilov-illia-lab3/templates/footer.php
+ 1 <?php
+ 2 ?>
+ 3     <footer>
+ 4         <div class="container">
+ 5             <nav>
+ 6                 <ul>
+ 7                     <li><a href="<?php echo site_url('index.php?page=home'); ?>">Головна</a></li>
+ 8                     <li><a href="<?php echo site_url('index.php?page=products'); ?>">Товари</a></li>
+ 9                     <li><a href="<?php echo site_url('index.php?page=cart'); ?>">Кошик</a></li>
+10                     <li><a href="<?php echo site_url('index.php?page=about'); ?>">Про нас</a></li>
+11                 </ul>
+12             </nav>
+13             <p>© <?php echo date("Y"); ?> Всі права захищено.</p>
+14         </div>
+15     </footer>
+16 </body>
+17 </html>
+
+
+
+
+        В. 10 Файл home.php
+GitHub репозиторій: 
+https://github.com/NureIvanilovIllia/smp-pzpi-23-3-ivanilov-illia/blob/main/Lab3/smp-pzpi-23-3-ivanilov-illia-lab3/templates/home.php
+ 1 <?php
+ 2 ?>
+ 3 <h2>Ласкаво просимо до нашого магазину!</h2>
+ 4 <p>Перегляньте наш <a href="<?php echo site_url('index.php?page=products'); ?>">каталог товарів</a>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        В. 11 Файл about.php
+GitHub репозиторій: 
+https://github.com/NureIvanilovIllia/smp-pzpi-23-3-ivanilov-illia/blob/main/Lab3/smp-pzpi-23-3-ivanilov-illia-lab3/templates/about.php
+ 1 <?php
+ 2 $storeName = "Продовольчий магазин 'Весна'";
+ 3 $creationDate = "03.06.2025";
+ 4 ?>
+ 5 <h2>Про Нас</h2>
+ 6 <p><strong>Назва магазину:</strong> <?php echo htmlspecialchars($storeName); ?></p>
+ 7 <p><strong>Дата створення:</strong> <?php echo htmlspecialchars($creationDate); ?></p>
